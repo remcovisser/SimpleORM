@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,13 +9,15 @@ using MySql.Data.MySqlClient;
 
 namespace SimpleORM.ORM
 {
-    class MySqlModel<T> : Model
+    class MySqlModel<T> : Model<T>
     {
         MySqlConnection connection;
+        Model<T> baseModel;
+
         public MySqlModel()
         {
-            Model model = new Model();
-            connection = model.MySqlconnection;
+            baseModel = new Model<T>();
+            connection = baseModel.MySqlconnection;
         }
 
         // Return all the data from the chosen collection
@@ -26,30 +27,7 @@ namespace SimpleORM.ORM
             MySqlCommand query = new MySqlCommand("SELECT * FROM " + table, connection);
             MySqlDataReader data = query.ExecuteReader();
 
-          
-            // Test
-            // Move this to the Model.cs
-            var results = new List<T>();
-            FieldInfo[] fields = this.GetType().GetFields();
-            int count = data.FieldCount;
-            T instance = (T)Activator.CreateInstance(this.GetType());
-
-
-            while (data.Read())
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    fields[i].SetValue(instance, Convert.ChangeType(data.GetString(i), fields[i].FieldType));
-
-                    if(i == (data.FieldCount - 1))
-                    {
-                        results.Add(instance);
-                        instance = (T)Activator.CreateInstance(this.GetType());
-                    }
-                }
-            }
-          
-            return results;
+            return baseModel.all(data, typeof(T));
         }
     }
 }

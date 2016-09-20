@@ -24,18 +24,19 @@ namespace SimpleORM.ORM
         // Remove the MySqlDataReader
         public List<T> all(MySqlDataReader data, Type modelType)
         {
-            var results = new List<T>();
             FieldInfo[] fields = modelType.GetFields();
-            int count = data.FieldCount;
+            int fieldCount = data.FieldCount;
             T instance = (T)Activator.CreateInstance(modelType);
+            List<T> results = new List<T>();
+
 
             while (data.Read())
             {
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < fieldCount; i++)
                 {
                     fields[i].SetValue(instance, Convert.ChangeType(data.GetString(i), fields[i].FieldType));
 
-                    if (i == (data.FieldCount - 1))
+                    if (i == (fieldCount - 1))
                     {
                         results.Add(instance);
                         instance = (T)Activator.CreateInstance(modelType);

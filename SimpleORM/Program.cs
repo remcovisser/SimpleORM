@@ -15,6 +15,11 @@ namespace SimpleORM
             Models.Users users = new Models.Users();
             List<Models.Users> allUsers = users.all();
 
+            foreach(Models.Users user in allUsers)
+            {
+                Console.WriteLine(user.id + ": " + user.firstName + " " + user.lastName);
+            }
+
             Console.ReadLine();
         }
     }

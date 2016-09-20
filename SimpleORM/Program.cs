@@ -5,21 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
+
 namespace SimpleORM
 {
-    class Program : Database
+    class Program
     {
         static void Main(string[] args)
         {
-            MySqlConnection connection = Database.connect();
-            MySqlCommand cities = new MySqlCommand("SELECT * FROM city", connection);
-            MySqlDataReader citiesRDR = cities.ExecuteReader();
-
-            while (citiesRDR.Read())
-            {
-                Console.WriteLine(citiesRDR.GetString(1));
-            }
-
+            Models.Users users = new Models.Users();
+            List<Models.Users> allUsers = users.all();
 
             Console.ReadLine();
         }

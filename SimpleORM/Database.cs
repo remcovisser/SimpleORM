@@ -9,13 +9,26 @@ namespace SimpleORM
 {
     class Database
     {
-        protected static MySqlConnection connect()
+        string server, user, password, database;
+        public string type;
+
+        // Database settings
+        public Database()
+        {
+            this.server = "localhost";
+            this.user = "root";
+            this.password = "root";
+            this.database = "simpleorm";
+            this.type = "mysql";
+        }
+       
+        public MySqlConnection connect()
         { 
             MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
-            builder.Server = "localhost";
-            builder.UserID = "root";
-            builder.Password = "root";
-            builder.Database = "world";
+            builder.Server = this.server;
+            builder.UserID = this.user;
+            builder.Password = this.password;
+            builder.Database = this.database;
 
             MySqlConnection connection = new MySqlConnection(builder.ToString());
             connection.Open();

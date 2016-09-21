@@ -19,29 +19,32 @@ namespace SimpleORM.ORM
                 this.MySqlconnection = database.connect();
             }
         }
+        
 
-        // Todo, make this so that it can also work with othe database.
-        // Remove the MySqlDataReader
-        public List<T> all(MySqlDataReader data, Type modelType)
+        public List<T> createInstaces(Type modelType, List<Tuple<int, string, FieldInfo>> formatedData)
         {
-            FieldInfo[] fields = modelType.GetFields();
-            int fieldCount = data.FieldCount;
             T instance = (T)Activator.CreateInstance(modelType);
             List<T> results = new List<T>();
-
-
-            while (data.Read())
+            int rowId = 1;
+          
+            foreach (Tuple<int, string, FieldInfo> row in formatedData)
             {
-                for (int i = 0; i < fieldCount; i++)
+                // Temp fix for last item
+                if(row.Equals(formatedData.Last()))
                 {
-                    fields[i].SetValue(instance, Convert.ChangeType(data.GetString(i), fields[i].FieldType));
-
-                    if (i == (fieldCount - 1))
-                    {
-                        results.Add(instance);
-                        instance = (T)Activator.CreateInstance(modelType);
-                    }
+                    row.Item3.SetValue(instance, Convert.ChangeType(row.Item2, row.Item3.FieldType));
+                    results.Add(instance);
+                    break;
                 }
+
+                if (row.Item1 != rowId)
+                {
+                    results.Add(instance);
+                    instance = (T)Activator.CreateInstance(modelType);
+                    rowId++;
+                }
+
+                row.Item3.SetValue(instance, Convert.ChangeType(row.Item2, row.Item3.FieldType));
             }
 
             return results;

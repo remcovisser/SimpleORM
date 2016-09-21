@@ -18,8 +18,11 @@ namespace SimpleORM
             foreach(Models.Users user in allUsers)
             {
                 Console.WriteLine(user.id + ": " + user.firstName + " " + user.lastName);
+                Console.WriteLine(user.fullname());
             }
 
+            Models.Users aUser = users.find(1);
+            Console.WriteLine(aUser.fullname());
             Console.ReadLine();
         }
     }

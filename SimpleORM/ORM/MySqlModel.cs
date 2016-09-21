@@ -58,6 +58,15 @@ namespace SimpleORM.ORM
         }
 
 
+        // bla
+        private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOpperator, object value)
+        {
+            query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOpperator + " " + "'" + value + "'";
+
+            return this;
+        }
+
+
         // ----------------------------------- Sql query builders -------------------------------- //
 
         // Find data bij id
@@ -69,19 +78,21 @@ namespace SimpleORM.ORM
         }
 
         // Where builder
-        public MySqlModel<T> where<U>(string field, string opperator, U value)
+        public MySqlModel<T> where(string field, string comparisonOpperator, object value)
         {
-            query += " WHERE " + field + " " + opperator + " " + value;
-
-            return this;
+            return logicalOperatorBuilder("where", field, comparisonOpperator, value);
         }
 
         // And builder
-        public MySqlModel<T> and<U>(string field, string opperator, U value)
+        public MySqlModel<T> and(string field, string comparisonOpperator, object value)
         {
-            query += " AND " + field + " " + opperator + " " + "'"+ value + "'";
+            return logicalOperatorBuilder("and", field, comparisonOpperator, value);
+        }
 
-            return this;
+        // Or builder
+        public MySqlModel<T> or(string field, string comparisonOpperator, object value)
+        {
+            return logicalOperatorBuilder("or", field, comparisonOpperator, value);
         }
     }
 }

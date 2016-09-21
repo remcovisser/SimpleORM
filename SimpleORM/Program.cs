@@ -16,6 +16,7 @@ namespace SimpleORM
             List<Models.Users> remcos = users.where("id", "=", 1)
                                         .and("firstName", "=", "remco")
                                         .and("lastName", "=", "visser")
+                                        .or("id", "=", 2)
                                         .get();
 
             foreach(Models.Users remco in remcos)

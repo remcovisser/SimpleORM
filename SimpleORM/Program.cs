@@ -13,16 +13,16 @@ namespace SimpleORM
         static void Main(string[] args)
         {
             Models.Users users = new Models.Users();
-            List<Models.Users> allUsers = users.all();
+            List<Models.Users> remcos = users.where("id", "=", 1)
+                                        .and("firstName", "=", "remco")
+                                        .and("lastName", "=", "visser")
+                                        .get();
 
-            foreach(Models.Users user in allUsers)
+            foreach(Models.Users remco in remcos)
             {
-                Console.WriteLine(user.id + ": " + user.firstName + " " + user.lastName);
-                Console.WriteLine(user.fullname());
+                Console.WriteLine(remco.fullname());
             }
 
-            Models.Users aUser = users.find(1);
-            Console.WriteLine(aUser.fullname());
             Console.ReadLine();
         }
     }

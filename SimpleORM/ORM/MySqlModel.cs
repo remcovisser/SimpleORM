@@ -13,15 +13,18 @@ namespace SimpleORM.ORM
         MySqlConnection connection;
         Model<T> baseModel;
         string table;
+        string query;
 
         public MySqlModel()
         {
             baseModel = new Model<T>();
             connection = baseModel.MySqlconnection;
             table = this.GetType().Name.ToLower();
+            query = "SELECT * FROM " + table;
         }
 
-        // Formate the data
+
+        // Format the data
         protected List<Tuple<int, string, FieldInfo>> formatData(MySqlDataReader data)
         {
             FieldInfo[] fields = typeof(T).GetFields();
@@ -45,20 +48,40 @@ namespace SimpleORM.ORM
             return formatedData;
         }
 
-        // Return 1 instance of the chosen collection
-        public T find(int id)
-        {
-            MySqlCommand query = new MySqlCommand("SELECT * FROM " + table + " WHERE id = " + id, connection);
 
-            return baseModel.createInstaces(typeof(T), this.formatData(query.ExecuteReader())).First();
+        // Execute the query
+        public List<T> get()
+        {
+            MySqlCommand command = new MySqlCommand(query, connection);
+
+            return baseModel.createInstaces(typeof(T), this.formatData(command.ExecuteReader()));
         }
 
-        // Return all the data from the chosen collection
-        public List<T> all()
-        {  
-            MySqlCommand query = new MySqlCommand("SELECT * FROM " + table, connection);
-          
-            return baseModel.createInstaces(typeof(T), this.formatData(query.ExecuteReader()));
+
+        // ----------------------------------- Sql query builders -------------------------------- //
+
+        // Find data bij id
+        public MySqlModel<T> find<U>(U value)
+        {
+            query += " WHERE id " + value;
+
+            return this;
+        }
+
+        // Where builder
+        public MySqlModel<T> where<U>(string field, string opperator, U value)
+        {
+            query += " WHERE " + field + " " + opperator + " " + value;
+
+            return this;
+        }
+
+        // And builder
+        public MySqlModel<T> and<U>(string field, string opperator, U value)
+        {
+            query += " AND " + field + " " + opperator + " " + "'"+ value + "'";
+
+            return this;
         }
     }
 }

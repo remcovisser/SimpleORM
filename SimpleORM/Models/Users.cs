@@ -17,5 +17,6 @@ namespace SimpleORM.Models
         {
             return this.firstName + " " + this.lastName;
         }
+
     }
 }

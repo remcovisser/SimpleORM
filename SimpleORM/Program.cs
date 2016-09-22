@@ -13,11 +13,9 @@ namespace SimpleORM
         static void Main(string[] args)
         {
             Models.Users users = new Models.Users();
-            List<Models.Users> remcos = users.where("id", "=", 1)
-                                        .and("firstName", "=", "remco")
-                                        .and("lastName", "=", "visser")
-                                        .or("id", "=", 2)
-                                        .orderby("id", "asc")
+            List<Models.Users> remcos = users
+                                        .groupby("firstName")
+                                        
                                         .get();
 
             foreach(Models.Users remco in remcos)

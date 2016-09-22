@@ -61,12 +61,20 @@ namespace SimpleORM.ORM
         // Logical operator builder
         private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOperator, object value)
         {
-            if (value != null)
-            { 
-                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator + " " + "'" + value + "'";
-            } else
+            // Group by  
+            if (value == null && comparisonOperator == null)
+            {
+                query += " " + logicalOperator.ToUpper() + " " + "'" + field + "'";
+            }
+            // Order by
+            else if (value == null)
             {
                 query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator;
+            }
+            // Where
+            else
+            {
+                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator + " " + "'" + value + "'";
             }
 
             return this;
@@ -105,6 +113,12 @@ namespace SimpleORM.ORM
         public MySqlModel<T> orderby(string field, string sort)
         {
             return logicalOperatorBuilder("order by", field, sort, null);
+        }
+
+        // GroupBy builder
+        public MySqlModel<T> groupby(string field)
+        {
+            return logicalOperatorBuilder("group by", field, null, null);
         }
     }
 }

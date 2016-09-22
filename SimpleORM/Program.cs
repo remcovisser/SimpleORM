@@ -17,6 +17,7 @@ namespace SimpleORM
                                         .and("firstName", "=", "remco")
                                         .and("lastName", "=", "visser")
                                         .or("id", "=", 2)
+                                        .orderby("id", "asc")
                                         .get();
 
             foreach(Models.Users remco in remcos)

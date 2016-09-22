@@ -58,16 +58,22 @@ namespace SimpleORM.ORM
         }
 
 
-        // bla
-        private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOpperator, object value)
+        // Logical operator builder
+        private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOperator, object value)
         {
-            query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOpperator + " " + "'" + value + "'";
+            if (value != null)
+            { 
+                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator + " " + "'" + value + "'";
+            } else
+            {
+                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator;
+            }
 
             return this;
         }
 
 
-        // ----------------------------------- Sql query builders -------------------------------- //
+        // ----------------------------------- Sql select builders -------------------------------- //
 
         // Find data bij id
         public MySqlModel<T> find<U>(U value)
@@ -78,21 +84,27 @@ namespace SimpleORM.ORM
         }
 
         // Where builder
-        public MySqlModel<T> where(string field, string comparisonOpperator, object value)
+        public MySqlModel<T> where(string field, string comparisonOperator, object value)
         {
-            return logicalOperatorBuilder("where", field, comparisonOpperator, value);
+            return logicalOperatorBuilder("where", field, comparisonOperator, value);
         }
 
         // And builder
-        public MySqlModel<T> and(string field, string comparisonOpperator, object value)
+        public MySqlModel<T> and(string field, string comparisonOperator, object value)
         {
-            return logicalOperatorBuilder("and", field, comparisonOpperator, value);
+            return logicalOperatorBuilder("and", field, comparisonOperator, value);
         }
 
         // Or builder
-        public MySqlModel<T> or(string field, string comparisonOpperator, object value)
+        public MySqlModel<T> or(string field, string comparisonOperator, object value)
         {
-            return logicalOperatorBuilder("or", field, comparisonOpperator, value);
+            return logicalOperatorBuilder("or", field, comparisonOperator, value);
+        }
+
+        // OrderBy builder
+        public MySqlModel<T> orderby(string field, string sort)
+        {
+            return logicalOperatorBuilder("order by", field, sort, null);
         }
     }
 }

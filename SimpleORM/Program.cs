@@ -13,17 +13,11 @@ namespace SimpleORM
         static void Main(string[] args)
         {
             Models.Users users = new Models.Users();
-            List<Models.Users> remcos = users.where("id", "=", 1)
-                                        .and("firstName", "=", "remco")
-                                        .and("lastName", "=", "visser")
-                                        .or("id", "=", 2)
-                                        .orderby("id", "asc")
-                                        .get();
+            int remcos = users
+                                        .select("id")
+                                        .sum();
 
-            foreach(Models.Users remco in remcos)
-            {
-                Console.WriteLine(remco.fullname());
-            }
+          
 
             Console.ReadLine();
         }

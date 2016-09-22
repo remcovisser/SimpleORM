@@ -14,6 +14,7 @@ namespace SimpleORM.ORM
         Model<T> baseModel;
         string table;
         string query;
+        string selectedFields;
 
         public MySqlModel()
         {
@@ -21,17 +22,19 @@ namespace SimpleORM.ORM
             connection = baseModel.MySqlconnection;
             table = this.GetType().Name.ToLower();
             query = "SELECT * FROM " + table;
+            selectedFields = null;
         }
 
 
         // Format the data
         protected List<Tuple<int, string, FieldInfo>> formatData(MySqlDataReader data)
         {
-            FieldInfo[] fields = typeof(T).GetFields();
+            List<FieldInfo> fields = baseModel.filterFields(typeof(T), selectedFields);
             int fieldCount = data.FieldCount;
             int x = 0;
             List<Tuple<int, string, FieldInfo>> formatedData = new List<Tuple<int, string, FieldInfo>>();
 
+          
             while (data.Read())
             {
                 for (int i = 0; i < fieldCount; i++)
@@ -49,7 +52,39 @@ namespace SimpleORM.ORM
         }
 
 
-        // Execute the query
+
+
+        // ----------------------------------- Sql select builders -------------------------------- //
+
+        // Select builder
+        public MySqlModel<T> select(string fields)
+        {
+            selectedFields = fields;
+            string[] selectedFieldsList = selectedFields.Replace(" ", string.Empty).Split(',');
+
+            query = "select ";
+            foreach (string selectedField in selectedFieldsList)
+            {
+                query += " " + selectedField;
+                if (!selectedField.Equals(selectedFieldsList.Last()))
+                {
+                    query += ",";
+                }
+            }
+            query += " from " + table;
+
+            return this;
+        }
+
+        // Find builder, Always search on the id
+        public MySqlModel<T> find<U>(U value)
+        {
+            query += " where id = " + value;
+
+            return this;
+        }
+
+        // Return a list of the collection
         public List<T> get()
         {
             MySqlCommand command = new MySqlCommand(query, connection);
@@ -57,31 +92,54 @@ namespace SimpleORM.ORM
             return baseModel.createInstaces(typeof(T), this.formatData(command.ExecuteReader()));
         }
 
+        // Return the amount of results 
+        public int count()
+        {
+            List<T> results = get();
 
-        // Logical operator builder
+            return results.Count;
+        }
+
+        // Return the sum of the selected field
+        public int sum()
+        {
+            List<T> results = get();
+            int sum = 0;
+
+            foreach(T result in results)
+            {
+                var test = result.GetType().GetProperty("id");
+
+            }
+
+            return 0;
+        }
+
+
+        // Logical operator builder helper
         private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOperator, object value)
         {
-            if (value != null)
-            { 
-                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator + " " + "'" + value + "'";
-            } else
+            // Group By
+            if (value == null && comparisonOperator == null)
+            {
+                query += " " + logicalOperator.ToUpper() + " " + "'" + field + "'";
+            }
+            // Order By
+            else if(value == null)
             {
                 query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator;
+            }
+            // Where
+            else
+            {
+                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator + " " + "'" + value + "'";
             }
 
             return this;
         }
 
 
-        // ----------------------------------- Sql select builders -------------------------------- //
-
-        // Find data bij id
-        public MySqlModel<T> find<U>(U value)
-        {
-            query += " WHERE id " + value;
-
-            return this;
-        }
+        // ----------------------------------- Sql comparison operators -------------------------------- //
 
         // Where builder
         public MySqlModel<T> where(string field, string comparisonOperator, object value)
@@ -105,6 +163,12 @@ namespace SimpleORM.ORM
         public MySqlModel<T> orderby(string field, string sort)
         {
             return logicalOperatorBuilder("order by", field, sort, null);
+        }
+
+        // GroupBy builder
+        public MySqlModel<T> groupby(string field)
+        {
+            return logicalOperatorBuilder("group by", field, null, null);
         }
     }
 }

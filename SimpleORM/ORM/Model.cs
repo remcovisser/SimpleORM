@@ -25,13 +25,20 @@ namespace SimpleORM.ORM
         public List<FieldInfo> filterFields(Type modelType, string selectedFields)
         {
             FieldInfo[] fields = modelType.GetFields();
-            // Filter out the fields that are not selected
             List<FieldInfo> filteredFields = new List<FieldInfo>();
-            if (selectedFields != null)
+
+            if (selectedFields == null)
             {
-                string[] selectedFieldsList = selectedFields.Replace(" ", string.Empty).Split(',');
                 foreach (FieldInfo field in fields)
                 {
+                    filteredFields.Add(field); 
+                }
+            }
+            else
+            {
+                foreach (FieldInfo field in fields)
+                {
+                    string[] selectedFieldsList = selectedFields.Replace(" ", string.Empty).Split(',');
                     if (selectedFieldsList.Contains(field.Name))
                     {
                         filteredFields.Add(field);
@@ -41,7 +48,9 @@ namespace SimpleORM.ORM
 
             return filteredFields;
         }
-        
+
+        // ----------------------------------- Sql select -------------------------------- //
+
         // Create a list of instace of type T
         public List<T> createInstaces(Type modelType, List<Tuple<int, string, FieldInfo>> formatedData)
         {
@@ -70,6 +79,33 @@ namespace SimpleORM.ORM
             }
 
             return results;
+        }
+
+        // ----------------------------------- Sql insert -------------------------------- //
+        public List<Tuple<string, object>> save<T>(T instance, string table)
+        {
+            Type modeltype = instance.GetType();
+            FieldInfo[] fields = modeltype.GetFields();
+            List<Tuple<string, object>> formatedData = new List<Tuple<string, object>>();
+
+            foreach(FieldInfo field in fields)
+            {
+                // Filter out the connection field, needs a fix
+                if (field.Equals(fields.Last()))
+                {
+                    break;
+                }
+
+                // Skip id field
+                if (!field.Equals(fields.First()))
+                {
+                    string fieldName = field.Name;
+                    object value = field.GetValue(instance);
+                    formatedData.Add(new Tuple<string, object>(field.Name, field.GetValue(instance)));
+                }
+            }
+
+            return formatedData ;
         }
     }
 }

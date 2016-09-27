@@ -52,7 +52,33 @@ namespace SimpleORM.ORM
         }
 
 
+        // ----------------------------------- Create builders ------------------------------------ //
+        public bool save()
+        {
+            List<Tuple<string, object>> formatedData = baseModel.save(this, table);
+            query = "insert into " + table;
+            string fields = "(";
+            string data = "(";
 
+            foreach(Tuple<string, object> item in formatedData)
+            {
+                if (item.Equals(formatedData.Last()))
+                {
+                    fields += item.Item1 + ")";
+                    data += "'"+ item.Item2 + "')";
+                    break;
+                }
+                fields += item.Item1 + ", ";
+                data += "'" + item.Item2 + "', ";
+            }
+            query += fields + " values " + data;
+
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.ExecuteNonQuery();
+            connection.Close();
+
+            return true;
+        }
 
         // ----------------------------------- Sql select builders -------------------------------- //
 
@@ -101,6 +127,7 @@ namespace SimpleORM.ORM
         }
 
         // Return the sum of the selected field
+        // TODO: how do you get the value of a property of a generic?
         public int sum()
         {
             List<T> results = get();
@@ -108,8 +135,12 @@ namespace SimpleORM.ORM
 
             foreach(T result in results)
             {
-                var test = result.GetType().GetProperty("id");
+                var test = typeof(T).GetProperty("id");
+                Type t = result.GetType();
 
+                PropertyInfo prop = t.GetProperty("id");
+
+                object list = prop.GetValue(t);
             }
 
             return 0;
@@ -119,10 +150,13 @@ namespace SimpleORM.ORM
         // Logical operator builder helper
         private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOperator, object value)
         {
-            if (value != null)
-            { 
-                query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator + " " + "'" + value + "'";
-            } else
+            // Group By
+            if (value == null && comparisonOperator == null)
+            {
+                query += " " + logicalOperator.ToUpper() + " " + "'" + field + "'";
+            }
+            // Order By
+            else if (value == null)
             {
                 query += " " + logicalOperator.ToUpper() + " " + field + " " + comparisonOperator;
             }

@@ -12,12 +12,12 @@ namespace SimpleORM
     {
         static void Main(string[] args)
         {
-            Models.Users users = new Models.Users();
-            int remcos = users
-                                        .select("id")
-                                        .sum();
+            Models.Users user = new Models.Users();
+            user.firstName = "Karel";
+            user.lastName = "de Groot";
+            user.save();
 
-          
+           
 
             Console.ReadLine();
         }

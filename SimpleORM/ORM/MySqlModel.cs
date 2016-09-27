@@ -174,7 +174,7 @@ namespace SimpleORM.ORM
         // Delete
         public bool delete()
         {
-            query = "delete from " + table + " where id = " + GetType().GetFields().First().GetValue(this.grab());
+            query = "delete from " + table + " where id = " + GetType().GetFields().First().GetValue(this);
             MySqlCommand command = new MySqlCommand(query, connection);
             command.ExecuteNonQuery();
 

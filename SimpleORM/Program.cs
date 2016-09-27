@@ -12,11 +12,11 @@ namespace SimpleORM
     {
         static void Main(string[] args)
         {
-            Models.Users remco = new Models.Users().find(42).grab();
+            Models.Users remco = new Models.Users().find(55).grab();
             Console.WriteLine(remco.fullname());
             Console.WriteLine("User Found ---------------------------");
 
-            remco.age = 41;
+            remco.age = 100;
             remco.update();
             Console.WriteLine("User Updated ---------------------------");
 
@@ -35,9 +35,10 @@ namespace SimpleORM
             Console.WriteLine("Users Listed ---------------------------");
 
             List<Models.Users> bbUsers = new Models.Users().where("firstName", "=", "Karel").get();
+            bool testDelete = new Models.Users().find(57).grab().delete();
             foreach(Models.Users bbUser in bbUsers)
             {
-                bbUser.delete();
+                //bbUser.delete();
             }
             Console.WriteLine("Users Deleted ---------------------------");
 

@@ -10,7 +10,7 @@ namespace SimpleORM.ORM
 {
     class Model<T>
     {
-        public MySqlConnection MySqlconnection;
+        public MySqlConnection MySqlconnection { get; set; }
         public Model()
         {
             Database database = new Database();
@@ -80,6 +80,7 @@ namespace SimpleORM.ORM
 
             return results;
         }
+
 
         // ----------------------------------- Sql insert -------------------------------- //
         public List<Tuple<string, object>> saveOrUpdate<T>(T instance, string table)

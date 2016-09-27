@@ -29,8 +29,8 @@ namespace SimpleORM.ORM
         // Format the data
         protected List<Tuple<int, string, FieldInfo>> formatData(MySqlDataReader data)
         {
-            List<FieldInfo> fields = baseModel.filterFields(typeof(T), selectedFields);
-            int fieldCount = data.FieldCount -1;
+            FieldInfo[] fields = this.GetType().GetFields();
+            int fieldCount = fields.Count();
             int x = 0;
             List<Tuple<int, string, FieldInfo>> formatedData = new List<Tuple<int, string, FieldInfo>>();
 
@@ -205,7 +205,7 @@ namespace SimpleORM.ORM
         }
 
 
-        // ----------------------------------- Sql comparison operators -------------------------------- //
+        // ----------------------------------- Comparison operators -------------------------------- //
 
         // Where builder
         public MySqlModel<T> where(string field, string comparisonOperator, object value)
@@ -235,6 +235,19 @@ namespace SimpleORM.ORM
         public MySqlModel<T> groupby(string field)
         {
             return logicalOperatorBuilder("group by", field, null, null);
+        }
+
+
+        // ----------------------------------- Relations -------------------------------- //
+        // Has one
+        public T hasOne<U>(U parent)
+        {
+            string parentName = this.GetType().Name.ToLower();
+            string fieldName = parentName.Remove(parentName.Length - 1) + "_id";
+
+            query += " where id = " + parent.GetType().GetField(fieldName).GetValue(parent);
+
+            return this.grab();
         }
     }
 }

@@ -13,10 +13,16 @@ namespace SimpleORM.Models
         public string firstName;
         public string lastName;
         public int age;
+        public int school_id;
 
         public string fullname()
         {
             return this.firstName + " " + this.lastName;
+        }
+
+        public Schools school()
+        {
+            return new Schools().hasOne(this);
         }
     }
 }

@@ -13,8 +13,13 @@ namespace SimpleORM
         static void Main(string[] args)
         {
             Models.Users user = new Models.Users().find(55).grab();
-
             Console.WriteLine(user.school().name);
+
+            List<Models.Books> userBooks = user.books();
+            foreach(Models.Books userBook in userBooks)
+            {
+                Console.WriteLine(userBook.name);
+            }
 
 
             /* TODO

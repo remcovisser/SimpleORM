@@ -24,5 +24,10 @@ namespace SimpleORM.Models
         {
             return new Schools().hasOne(this);
         }
+
+        public List<Books> books()
+        {
+            return new Books().hasMany(this);
+        }
     }
 }

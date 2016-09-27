@@ -240,14 +240,31 @@ namespace SimpleORM.ORM
 
         // ----------------------------------- Relations -------------------------------- //
         // Has one
-        public T hasOne<U>(U parent)
+        public T hasOne<U>(U parent, string customField = null)
         {
-            string parentName = this.GetType().Name.ToLower();
-            string fieldName = parentName.Remove(parentName.Length - 1) + "_id";
+            if (customField == null)
+            {
+                string parentName = this.GetType().Name.ToLower();
+                customField = parentName.Remove(parentName.Length - 1) + "_id";
+            }
 
-            query += " where id = " + parent.GetType().GetField(fieldName).GetValue(parent);
+            query += " where id = " + parent.GetType().GetField(customField).GetValue(parent);
 
             return this.grab();
+        }
+
+        // Has many
+        public List<T> hasMany<U>(U parent, string customField = null)
+        {
+            if (customField == null)
+            {
+                string parentName = parent.GetType().Name.ToLower();
+                customField = parentName.Remove(parentName.Length - 1) + "_id";
+            }
+
+            query += " where " + customField + " = " + parent.GetType().GetField("id").GetValue(parent);
+
+            return this.get();
         }
     }
 }

@@ -171,6 +171,17 @@ namespace SimpleORM.ORM
         }
 
 
+        // Delete
+        public bool delete()
+        {
+            query = "delete from " + table + " where id = " + GetType().GetFields().First().GetValue(this.grab());
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.ExecuteNonQuery();
+
+            return true;
+        }
+
+
         // Logical operator builder helper
         private MySqlModel<T> logicalOperatorBuilder(string logicalOperator, string field, string comparisonOperator, object value)
         {

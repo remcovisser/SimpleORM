@@ -19,8 +19,30 @@ namespace SimpleORM.ORM
                 this.MySqlconnection = database.connect();
             }
         }
-        
 
+
+        // Filter out the fields that are not selected
+        public List<FieldInfo> filterFields(Type modelType, string selectedFields)
+        {
+            FieldInfo[] fields = modelType.GetFields();
+            // Filter out the fields that are not selected
+            List<FieldInfo> filteredFields = new List<FieldInfo>();
+            if (selectedFields != null)
+            {
+                string[] selectedFieldsList = selectedFields.Replace(" ", string.Empty).Split(',');
+                foreach (FieldInfo field in fields)
+                {
+                    if (selectedFieldsList.Contains(field.Name))
+                    {
+                        filteredFields.Add(field);
+                    }
+                }
+            }
+
+            return filteredFields;
+        }
+        
+        // Create a list of instace of type T
         public List<T> createInstaces(Type modelType, List<Tuple<int, string, FieldInfo>> formatedData)
         {
             T instance = (T)Activator.CreateInstance(modelType);

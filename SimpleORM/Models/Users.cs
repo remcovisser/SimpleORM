@@ -12,11 +12,11 @@ namespace SimpleORM.Models
         public int id;
         public string firstName;
         public string lastName;
+        public int age;
 
         public string fullname()
         {
             return this.firstName + " " + this.lastName;
         }
-
     }
 }

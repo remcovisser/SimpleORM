@@ -30,7 +30,7 @@ namespace SimpleORM.ORM
         protected List<Tuple<int, string, FieldInfo>> formatData(MySqlDataReader data)
         {
             List<FieldInfo> fields = baseModel.filterFields(typeof(T), selectedFields);
-            int fieldCount = data.FieldCount;
+            int fieldCount = data.FieldCount -1;
             int x = 0;
             List<Tuple<int, string, FieldInfo>> formatedData = new List<Tuple<int, string, FieldInfo>>();
 
@@ -43,6 +43,7 @@ namespace SimpleORM.ORM
                     {
                         x++;
                     }
+     
                     formatedData.Add(new Tuple<int, string, FieldInfo>(x, data.GetString(i), fields[i]));
                 }
             }
@@ -55,27 +56,42 @@ namespace SimpleORM.ORM
         // ----------------------------------- Create builders ------------------------------------ //
         public bool save()
         {
-            List<Tuple<string, object>> formatedData = baseModel.save(this, table);
+            List<Tuple<string, object>> formatedData = baseModel.saveOrUpdate(this, table);
             query = "insert into " + table;
             string fields = "(";
             string data = "(";
 
             foreach(Tuple<string, object> item in formatedData)
             {
-                if (item.Equals(formatedData.Last()))
-                {
-                    fields += item.Item1 + ")";
-                    data += "'"+ item.Item2 + "')";
-                    break;
-                }
-                fields += item.Item1 + ", ";
-                data += "'" + item.Item2 + "', ";
+                fields += item.Item1 + ",";
+                data += "'" + item.Item2 + "',";
             }
-            query += fields + " values " + data;
+            fields = fields.Remove(fields.Length - 1);
+            data = data.Remove(data.Length - 1);
+
+            query += fields + ") values " + data + ")";
 
             MySqlCommand command = new MySqlCommand(query, connection);
             command.ExecuteNonQuery();
-            connection.Close();
+
+            return true;
+        }
+
+        public bool update()
+        {
+            List<Tuple<string, object>> formatedData = baseModel.saveOrUpdate(this, table);
+            query = "update " + table + " set ";
+            string fieldsAndData = "";
+
+            foreach (Tuple<string, object> item in formatedData)
+            {
+                fieldsAndData += item.Item1 + "='" + item.Item2 + "',";
+            }
+            fieldsAndData = fieldsAndData.Remove(fieldsAndData.Length - 1);
+
+            query += fieldsAndData + " where id = " + this.GetType().GetFields().First().GetValue(this);
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.ExecuteNonQuery();
 
             return true;
         }
@@ -110,12 +126,20 @@ namespace SimpleORM.ORM
             return this;
         }
 
-        // Return a list of the collection
+        // Return a list of the instance(s)
         public List<T> get()
         {
             MySqlCommand command = new MySqlCommand(query, connection);
 
             return baseModel.createInstaces(typeof(T), this.formatData(command.ExecuteReader()));
+        }
+
+        // Return the instance
+        public T grab()
+        {
+            MySqlCommand command = new MySqlCommand(query, connection);
+
+            return baseModel.createInstaces(typeof(T), this.formatData(command.ExecuteReader())).First();
         }
 
         // Return the amount of results 

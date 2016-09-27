@@ -82,7 +82,7 @@ namespace SimpleORM.ORM
         }
 
         // ----------------------------------- Sql insert -------------------------------- //
-        public List<Tuple<string, object>> save<T>(T instance, string table)
+        public List<Tuple<string, object>> saveOrUpdate<T>(T instance, string table)
         {
             Type modeltype = instance.GetType();
             FieldInfo[] fields = modeltype.GetFields();

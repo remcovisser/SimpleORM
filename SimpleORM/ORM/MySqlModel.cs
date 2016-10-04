@@ -171,7 +171,6 @@ namespace SimpleORM.ORM
             return sum;
         }
 
-
         // Delete
         public bool delete()
         {

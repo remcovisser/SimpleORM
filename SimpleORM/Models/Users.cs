@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
+using SimpleORM.ORM;
+
 namespace SimpleORM.Models
 {
-    class Users : ORM.MySqlModel<Users>
+    class Users : MySqlModelTest<Users>
     {
         public int id;
         public string firstName;

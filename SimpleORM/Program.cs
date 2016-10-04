@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
+using SimpleORM.Models;
+
 
 namespace SimpleORM
 {
@@ -12,7 +14,7 @@ namespace SimpleORM
     {
         static void Main(string[] args)
         {
-            Models.Users user = new Models.Users().first().grab();
+            Users user = new Users().first().grab();
             Console.WriteLine(user.fullname());
 
             int usersSumTest = user.where("firstName", "=", "remco").sum("id");

@@ -14,11 +14,7 @@ namespace SimpleORM
     {
         static void Main(string[] args)
         {
-            Users user = new Users().first().grab();
-            Console.WriteLine(user.fullname());
-
-            int usersSumTest = user.where("firstName", "=", "remco").sum("id");
-            Console.WriteLine(usersSumTest);
+            Users user = new Users();
 
 
 

@@ -9,7 +9,7 @@ using SimpleORM.ORM;
 
 namespace SimpleORM.Models
 {
-    class Users : MySqlModelTest<Users>
+    class Users : MongoModel<Users>
     {
         public int id;
         public string firstName;

@@ -12,14 +12,12 @@ namespace SimpleORM
     {
         static void Main(string[] args)
         {
-            Models.Users user = new Models.Users().find(55).grab();
-            Console.WriteLine(user.school().name);
+            Models.Users user = new Models.Users().first().grab();
+            Console.WriteLine(user.fullname());
 
-            List<Models.Books> userBooks = user.books();
-            foreach(Models.Books userBook in userBooks)
-            {
-                Console.WriteLine(userBook.name);
-            }
+            int usersSumTest = user.where("firstName", "=", "remco").sum("id");
+            Console.WriteLine(usersSumTest);
+
 
 
             /* TODO
@@ -30,8 +28,6 @@ namespace SimpleORM
              *  - Comments in code
              *  - Een nosql driver maken
              *  - Testen snelheid veel data
-             *  - Sum method afmaken
-             *  - Joins/Relaties?
              */ 
 
             Console.ReadLine();

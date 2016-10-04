@@ -33,7 +33,6 @@ namespace SimpleORM.ORM
             int fieldCount = fields.Count();
             int x = 0;
             List<Tuple<int, string, FieldInfo>> formatedData = new List<Tuple<int, string, FieldInfo>>();
-
           
             while (data.Read())
             {
@@ -126,6 +125,14 @@ namespace SimpleORM.ORM
             return this;
         }
 
+        // Find builder, Always search on the id
+        public MySqlModel<T> first()
+        {
+            query += " limit 1 ";
+
+            return this;
+        }
+
         // Return a list of the instance(s)
         public List<T> get()
         {
@@ -151,23 +158,17 @@ namespace SimpleORM.ORM
         }
 
         // Return the sum of the selected field
-        // TODO: how do you get the value of a property of a generic?
-        public int sum()
+        public int sum(string value)
         {
             List<T> results = get();
             int sum = 0;
 
             foreach(T result in results)
             {
-                var test = typeof(T).GetProperty("id");
-                Type t = result.GetType();
-
-                PropertyInfo prop = t.GetProperty("id");
-
-                object list = prop.GetValue(t);
+                sum += Convert.ToInt32(result.GetType().GetField(value).GetValue(result));
             }
 
-            return 0;
+            return sum;
         }
 
 

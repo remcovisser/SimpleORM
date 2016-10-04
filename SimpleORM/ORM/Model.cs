@@ -49,8 +49,6 @@ namespace SimpleORM.ORM
             return filteredFields;
         }
 
-        // ----------------------------------- Sql select -------------------------------- //
-
         // Create a list of instace of type T
         public List<T> createInstaces(Type modelType, List<Tuple<int, string, FieldInfo>> formatedData)
         {
@@ -81,8 +79,6 @@ namespace SimpleORM.ORM
             return results;
         }
 
-
-        // ----------------------------------- Sql insert -------------------------------- //
         public List<Tuple<string, object>> saveOrUpdate<T>(T instance, string table)
         {
             Type modeltype = instance.GetType();
